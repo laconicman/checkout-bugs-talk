@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -45,7 +46,7 @@ class WhiteScreenTest {
             ::Screen,
         ).onEach { rendered = it }.launchIn(backgroundScope)
 
-        advanceUntilIdle()
+        runCurrent() // unlike advanceUntilIdle, this also runs what lives only in backgroundScope
 
         assertNull(rendered) // white screen
     }
