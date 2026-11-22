@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.util.concurrent.atomic.AtomicBoolean
 import org.junit.After
@@ -28,6 +29,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
@@ -130,6 +132,51 @@ class FrozenAppTest {
         )
     }
 
+    /**
+     * The marker's blind spot is the very shape that froze the app. The request is made by
+     * the flow's producer in its own scope, where the marker is absent, so the guard lets it
+     * through, and the transaction stays open until the answer arrives.
+     */
+    @Test
+    fun `the marker does not see a request made by the awaited flow`() = runBlocking {
+        val shippings: Flow<Int> = flow {
+            emit(elsewhere.async { requestStocks("https://example.com/stocks") }.await())
+        }
+
+        val shipping = db.guardedTransaction {
+            db.orderDao().insert(OrderRow(1))
+            shippings.first() // no error: the guard never saw the transaction
+        }
+
+        assertEquals(42, shipping)
+    }
+
+    /**
+     * The fix by construction: gather first, write last. `runInTransaction` takes a plain
+     * block, not a suspending one, so awaiting a flow or a suspending request inside it does
+     * not compile. What the transaction cannot await, it cannot deadlock on. A blocking wait
+     * such as `runBlocking` still compiles, and is then visible at the call site.
+     */
+    @Test
+    fun `gathering before a transaction that cannot suspend leaves nothing to wait for`() = runBlocking {
+        val shippings: Flow<Int> = flow {
+            emit(elsewhere.async { db.orderDao().count() }.await()) // the producer that deadlocked above
+        }
+
+        val saved = withTimeoutOrNull(3.seconds) {
+            val shipping = shippings.first() // 1. gather: free to read the database
+            val request = async { requestStocks("https://example.com/stocks") } // 2. network: no transaction is open
+            elsewhere.async { db.orderDao().count() }.await() // an unrelated screen reads meanwhile
+            val stocks = request.await()
+            withContext(Dispatchers.IO) { // 3. write: this block cannot suspend
+                db.runInTransaction { db.orderDao().insertNow(OrderRow(id = stocks.toLong() + shipping)) }
+            }
+        }
+
+        assertNotNull(saved) // nothing was left to wait for
+        assertEquals(1, db.orderDao().count())
+    }
+
     /** A transaction marker for the coroutine context. */
     private object DbTransactionMarker : CoroutineContext.Element {
         override val key: CoroutineContext.Key<*> get() = Key
@@ -146,5 +193,14 @@ class FrozenAppTest {
             error("prohibit network request from database transaction Coroutine Context. Url: $url")
         }
         error("unreachable in this test")
+    }
+
+    /** The same guard as [requestSomething], and then an answer after some latency. */
+    private suspend fun requestStocks(url: String): Int {
+        if (coroutineContext.isInDbTransaction()) {
+            error("prohibit network request from database transaction Coroutine Context. Url: $url")
+        }
+        delay(500.milliseconds)
+        return 42
     }
 }

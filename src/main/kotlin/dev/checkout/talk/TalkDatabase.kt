@@ -19,6 +19,10 @@ interface OrderRowDao {
     @Insert
     suspend fun insert(row: OrderRow)
 
+    /** The same insert without `suspend`, for a transaction body that must not wait. */
+    @Insert
+    fun insertNow(row: OrderRow)
+
     @Query("SELECT COUNT(*) FROM OrderRow")
     suspend fun count(): Int
 }
