@@ -1,7 +1,7 @@
 # Changelog against upstream
 
-Base: upstream `main` at `a6d80b5` (2026-11-02). Everything below reached this fork's `main`
-in one merge commit, `7d901b1`, so that each change keeps the hash of its branch.
+Base: upstream `main` at `a6d80b5` (2026-11-02). Each change below keeps the hash of its
+branch: they reached this fork's `main` through merge commits, never squashed.
 
 ## The changes
 

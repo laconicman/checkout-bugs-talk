@@ -93,8 +93,11 @@ Limits of the sweep, all stated in the code or the pull requests:
 - It reaches rows by rowid, under a name the table has left free. Two schemas defeat that. A
   generated column named `rowid` is invisible to `table_info`
   ([shell](evidence/sqlite-generated-rowid-column.txt)); `table_xinfo` would show it, but
-  does not exist before SQLite 3.26, which `minSdk` 23 still reaches. And a table that
-  declares all three names leaves none; the sweep then fails with an exception.
+  does not exist before SQLite 3.26, which `minSdk` 23 still reaches. On such a table the sweep can
+  still remove a valid row whose generated value equals the orphan's rowid. The guard stops
+  it on the next pass, which rolls back inside a migration; outside a transaction that row
+  is gone. And a table that declares all three names leaves none; the sweep then fails with
+  an exception.
 - The wrapper overrides `migrate(SupportSQLiteDatabase)`. With a `SQLiteDriver` set, Room calls
   the other overload and the wrapper fails with Room's `NotImplementedError`.
 
