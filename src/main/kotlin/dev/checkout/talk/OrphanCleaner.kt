@@ -17,8 +17,9 @@ fun SupportSQLiteDatabase.clearRowsWithoutParent() {
         val violations = readForeignKeyViolations()
         if (violations.isEmpty()) return
         check(violations != previous) { "Deleting by rowid removed none of $violations" }
-        violations.forEach { (table, rowId) ->
-            execSQL("DELETE FROM $table WHERE rowid = $rowId")
+        violations.groupBy({ it.first }, { it.second }).forEach { (table, rowIds) ->
+            val rowIdName = rowIdNameOf(table)
+            rowIds.forEach { execSQL("DELETE FROM $table WHERE $rowIdName = $it") }
         }
         previous = violations
     }
@@ -51,3 +52,15 @@ private fun SupportSQLiteDatabase.readForeignKeyViolations(): List<Pair<String, 
             }
         }
     }
+
+/**
+ * A name that still reaches the real rowid of [table]. SQLite knows it as `rowid`, `_rowid_`
+ * and `oid`, and a declared column with one of these names takes that name over.
+ */
+private fun SupportSQLiteDatabase.rowIdNameOf(table: String): String {
+    val declared = query("PRAGMA table_info(`$table`)").use { cursor ->
+        val name = cursor.getColumnIndexOrThrow("name")
+        buildSet { while (cursor.moveToNext()) add(cursor.getString(name).lowercase()) }
+    }
+    return listOf("rowid", "_rowid_", "oid").first { it !in declared }
+}

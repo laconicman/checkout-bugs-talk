@@ -10,7 +10,7 @@ This is a fork. It keeps every example of the talk and adds a second fix to each
 These are small educational reproductions. Tests assert the surprising behavior
 as well as countermeasures, so a successful run includes reproducing the bugs.
 There is no application UI, backend, account or emulator to set up.
-The suite contains 47 tests across ten classes.
+The suite contains 48 tests across ten classes.
 
 ## Run
 
