@@ -7,7 +7,7 @@ coroutines.
 These are small educational reproductions. Tests assert the surprising behavior
 as well as countermeasures, so a successful run includes reproducing the bugs.
 There is no application UI, backend, account or emulator to set up.
-The suite contains 28 tests across eight classes.
+The suite contains 31 tests across eight classes.
 
 ## Run
 

@@ -5,10 +5,21 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 /**
  * Demo repair: ask SQLite which rows have missing parents, then delete those rows.
  * This version omits production concerns such as reporting and transaction handling.
+ *
+ * `foreign_key_check` reports a row only when its immediate parent is missing, and deleting
+ * that row can orphan its own children, so repeat until the check comes back empty. A pass
+ * that removes nothing would repeat forever, so it stops with an error instead.
  */
 fun SupportSQLiteDatabase.clearRowsWithoutParent() {
-    readForeignKeyViolations().forEach { (table, rowId) ->
-        execSQL("DELETE FROM $table WHERE rowid = $rowId")
+    var previous: List<Pair<String, Long>>? = null
+    while (true) {
+        val violations = readForeignKeyViolations()
+        if (violations.isEmpty()) return
+        check(violations != previous) { "Deleting by rowid removed none of $violations" }
+        violations.forEach { (table, rowId) ->
+            execSQL("DELETE FROM $table WHERE rowid = $rowId")
+        }
+        previous = violations
     }
 }
 
