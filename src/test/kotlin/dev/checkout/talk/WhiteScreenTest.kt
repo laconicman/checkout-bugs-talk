@@ -4,13 +4,16 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -45,7 +48,7 @@ class WhiteScreenTest {
             ::Screen,
         ).onEach { rendered = it }.launchIn(backgroundScope)
 
-        advanceUntilIdle()
+        runCurrent() // unlike advanceUntilIdle, this also runs what lives only in backgroundScope
 
         assertNull(rendered) // white screen
     }
@@ -100,6 +103,75 @@ class WhiteScreenTest {
         assertEquals(null, (states.last() as State.Enriched).optional)
     }
 
+    /**
+     * The same fix with no second mechanism: every input starts as "not yet", so combine
+     * always has a first value from each of them, and the frame is derived from what has
+     * arrived. The tiers become a rule about which inputs the content needs.
+     */
+    @Test
+    fun `inputs that start as not-yet render the first frame without the optional one`() = runTest {
+        val frames = mutableListOf<Frame>()
+
+        frames(
+            products = flowOf("products"),
+            user = flowOf("user"),
+            currency = flowOf("RUB"),
+            deliveryPrices = flowOf("deliveryPrices"),
+            promos = MutableSharedFlow(), // open, and never emits
+        ).onEach { frames += it }.launchIn(backgroundScope)
+
+        runCurrent()
+
+        assertEquals(
+            Frame.Content("products", "user", "RUB", "deliveryPrices", promos = null),
+            frames.last(),
+        )
+    }
+
+    /** A silent mandatory input is now something the screen can show, not an absence of state. */
+    @Test
+    fun `a silent mandatory input renders loading instead of nothing`() = runTest {
+        val frames = mutableListOf<Frame>()
+
+        frames(
+            products = flowOf("products"),
+            user = MutableSharedFlow(), // the mandatory input that never emits
+            currency = flowOf("RUB"),
+            deliveryPrices = flowOf("deliveryPrices"),
+            promos = flowOf("promo"),
+        ).onEach { frames += it }.launchIn(backgroundScope)
+
+        runCurrent()
+
+        assertEquals(listOf<Frame>(Frame.Loading), frames)
+    }
+
+    /** The inputs stay live: a mandatory one that changes later still reaches the screen. */
+    @Test
+    fun `a mandatory input that changes later updates the frame`() = runTest {
+        val currency = MutableSharedFlow<String>()
+        val frames = mutableListOf<Frame>()
+
+        frames(
+            products = flowOf("products"),
+            user = flowOf("user"),
+            currency = currency,
+            deliveryPrices = flowOf("deliveryPrices"),
+            promos = MutableSharedFlow(),
+        ).onEach { frames += it }.launchIn(backgroundScope)
+
+        runCurrent()
+        assertEquals(Frame.Loading, frames.last()) // no currency yet
+
+        currency.emit("RUB")
+        runCurrent()
+        assertEquals("RUB", (frames.last() as Frame.Content).currency)
+
+        currency.emit("EUR")
+        runCurrent()
+        assertEquals("EUR", (frames.last() as Frame.Content).currency) // the same flow, updated
+    }
+
     private data class Main(val products: String, val user: String, val currency: String)
 
     private sealed interface State {
@@ -114,4 +186,35 @@ class WhiteScreenTest {
     )
 
     private suspend fun loadAdditional(): String = flowOf("deliveryPrices").first()
+
+    private sealed interface Frame {
+        data object Loading : Frame
+        data class Content(
+            val products: String,
+            val user: String,
+            val currency: String,
+            val deliveryPrices: String?,
+            val promos: String?,
+        ) : Frame
+    }
+
+    private fun frames(
+        products: Flow<String>,
+        user: Flow<String>,
+        currency: Flow<String>,
+        deliveryPrices: Flow<String>,
+        promos: Flow<String>,
+    ): Flow<Frame> = combine(
+        products.notYet(),
+        user.notYet(),
+        currency.notYet(),
+        deliveryPrices.notYet(),
+        promos.notYet(),
+    ) { products, user, currency, deliveryPrices, promos ->
+        if (products == null || user == null || currency == null) Frame.Loading
+        else Frame.Content(products, user, currency, deliveryPrices, promos)
+    }.distinctUntilChanged()
+
+    /** The flow's own values, after an initial null that stands for "not yet". */
+    private fun <T : Any> Flow<T>.notYet(): Flow<T?> = onStart<T?> { emit(null) }
 }

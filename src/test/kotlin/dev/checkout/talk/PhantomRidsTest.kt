@@ -84,6 +84,18 @@ class PhantomRidsTest : SQLiteDatabaseTest by SQLiteDatabaseTest(
         assertEquals(listOf("QueuedProductRid"), db.orphanTables())
     }
 
+    /** The broken migration, untouched, followed by the sweep: nothing is left to re-attach. */
+    @Test
+    fun `sweeping after the broken migration leaves nothing to re-attach`() {
+        db.insertOrder(orderId = 1, productId = 1, rid = "OLD-RID")
+
+        db.migration42to43()
+        db.clearRowsWithoutParent()
+        db.insertOrder(orderId = 1, productId = 1, rid = "NEW-RID")
+
+        assertEquals(listOf("NEW-RID"), db.ridsOfOrder(orderId = 1))
+    }
+
     // --- the migration under test, verbatim in shape ---
 
     private fun SupportSQLiteDatabase.migration42to43() = asMigration {
@@ -122,7 +134,7 @@ class PhantomRidsTest : SQLiteDatabaseTest by SQLiteDatabaseTest(
         }
 
     private fun SupportSQLiteDatabase.asMigration(block: SupportSQLiteDatabase.() -> Unit) {
-        execSQL("PRAGMA foreign_keys = OFF") // Room does this for every migration
+        execSQL("PRAGMA foreign_keys = OFF") // Room's default state during a migration
         block()
     }
 }

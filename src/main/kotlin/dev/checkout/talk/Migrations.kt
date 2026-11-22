@@ -4,9 +4,9 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
- * Slide 17. The shape that produced the phantom items: Room disables the foreign_keys
- * pragma for the duration of a migration, so ON DELETE CASCADE does not fire here and
- * OrderProductEntity keeps its rows.
+ * Slide 17. The shape that produced the phantom items: the foreign_keys pragma is still
+ * off while a migration runs (Room turns it on only afterwards, when the database opens),
+ * so ON DELETE CASCADE does not fire here and OrderProductEntity keeps its rows.
  */
 internal class BrokenOrderQueueMigration : Migration(42, 43) {
     override fun migrate(db: SupportSQLiteDatabase) {

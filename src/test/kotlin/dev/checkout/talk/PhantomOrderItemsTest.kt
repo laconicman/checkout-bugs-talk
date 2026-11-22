@@ -11,8 +11,9 @@ import kotlin.test.assertEquals
  * Bug 2 — "Phantom items from other orders", slides 15-18.
  *
  * ON DELETE CASCADE is not a property of the schema alone. It only fires while the
- * `foreign_keys` pragma is on. Room turns it on at runtime and off inside migrations,
- * so the very same DELETE statement means two different things depending on where it runs.
+ * `foreign_keys` pragma is on. Room turns it on when the database opens, which is after
+ * any migration has run, so the very same DELETE statement means two different things
+ * depending on where it runs.
  */
 @Config(sdk = [35])
 @RunWith(RobolectricTestRunner::class)

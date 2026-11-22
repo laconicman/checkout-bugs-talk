@@ -82,6 +82,28 @@ class PragmaInsideTransactionTest : SQLiteDatabaseTest by SQLiteDatabaseTest(
         assertEquals(0, db.countOf("child")) // cascade fired
     }
 
+    /**
+     * "Then let Room turn the pragma on before the transaction starts."
+     *
+     * That breaks the ordinary table rebuild. With enforcement on, DROP TABLE first deletes
+     * the table's rows, and that implicit DELETE fires the cascade.
+     */
+    @Test
+    fun `with foreign keys on a table rebuild fires the cascade and empties the child`() {
+        db.seedParentWithChild()
+        db.execSQL("PRAGMA foreign_keys = ON")
+
+        db.inExclusiveTransaction {
+            execSQL("CREATE TABLE _new_parent (id INTEGER PRIMARY KEY NOT NULL, extra TEXT)")
+            execSQL("INSERT INTO _new_parent (id) SELECT id FROM parent")
+            execSQL("DROP TABLE parent")
+            execSQL("ALTER TABLE _new_parent RENAME TO parent")
+        }
+
+        assertEquals(1, db.countOf("parent")) // the rebuild kept the parent row
+        assertEquals(0, db.countOf("child"))  // and silently deleted its child
+    }
+
     private fun SupportSQLiteDatabase.seedParentWithChild() {
         execSQL("INSERT INTO parent (id) VALUES (1)")
         execSQL("INSERT INTO child (id, parentId) VALUES (1, 1)")
