@@ -125,8 +125,9 @@ we read was the failed attempt's. Read the newest.
 
 ### 10. A green run is not always a run
 
-Upstream's CI had never executed a test. On the fork, runs failed three times while
-Robolectric downloaded its 200 MB runtime, and passed on re-run with nothing changed
+Upstream's CI had never executed a test. On the fork, four CI runs and the very first
+local run failed while Robolectric downloaded its 200 MB runtime, and each passed on re-run
+with nothing changed
 ([excerpt](evidence/robolectric-runtime-download-flake.txt)). Look at what failed before
 concluding anything from a red or a green mark.
 
