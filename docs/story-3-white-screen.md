@@ -28,7 +28,7 @@ So the cause is not a slow input. It is an input for which `combine` has no valu
 | Strategy | First frame | A silent mandatory input | Later changes to mandatory inputs | Cost | Status |
 |---|---|---|---|---|---|
 | **Tiered loading**: await the mandatory tier with `first()`, render, then add the rest | As soon as the mandatory tier has arrived | No state is produced. Reasoned from the code: `first()` would wait. No test shows it. | Not seen: the tier is read once | A second, imperative mechanism next to the flows; ordering code | The talk's fix. Kept, untouched. |
-| **Every input starts as "not yet"**, one `combine` derives the frame | At once: `Loading`, then `Content` when the mandatory inputs have arrived | `Loading`, a state the screen can draw | Reach the screen through the same flow | One operator per input and one `if` | Ours. Added next to the tiered test. |
+| **Every input starts as "not yet"**, one `combine` derives the frame | At once: `Loading` while a mandatory input is missing, or `Content` straight away if they have all arrived by the first combination | `Loading`, a state the screen can draw | Reach the screen through the same flow | One operator per input and one `if` | Ours. Added next to the tiered test. |
 | Initial value only for the optional inputs | When the mandatory inputs have arrived | Silence again | Reach the screen | Less code | Not built. It is the same idea, applied halfway. |
 | `stateIn(scope, Eagerly, null)` per input | The same as "not yet" | The same | The same | Needs a scope, starts collecting at once, conflates | Not chosen: more machinery than `onStart` for an adapter inside one `combine` |
 | A wrapper type in place of `null` | The same | The same | The same | A small sealed type | Needed only when an input can legitimately emit `null` |
@@ -102,8 +102,9 @@ emitting. An `emptyFlow()` completes at once, which is a different situation.
 - `null` is a value for `combine`. The first diagnosis of the three failing tests blamed
   `combine`'s handling of `null`. A probe with no nulls in it failed the same way, which
   cleared `combine` and pointed at the harness.
-- The exact sequence of intermediate frames depends on how `combine` batches. Assert the last
-  frame, or a list that `distinctUntilChanged` makes unambiguous.
+- The exact sequence of intermediate frames depends on how `combine` batches. `Loading` is
+  not guaranteed to come first when the mandatory inputs are fast. Assert the last frame, or
+  a list that `distinctUntilChanged` makes unambiguous.
 - A `runBlocking` or `runTest` test body must end in a statement of type `Unit`, or JUnit 4
   rejects the method.
 

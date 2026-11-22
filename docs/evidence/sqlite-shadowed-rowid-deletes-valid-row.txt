@@ -1,0 +1,21 @@
+# sqlite3 shell, 3.54.0, 2026-11-22. A child table that declares its own INTEGER column named
+# rowid. foreign_key_check reports the REAL rowid of the orphan (1). The delete by "rowid = 1"
+# is resolved against the declared column and removes the VALID row. The orphan stays.
+
+CREATE TABLE p(id INTEGER PRIMARY KEY);
+CREATE TABLE c("rowid" INTEGER, pid INTEGER NOT NULL REFERENCES p(id) ON DELETE CASCADE, note TEXT);
+INSERT INTO p VALUES(7);
+PRAGMA foreign_keys=OFF;
+INSERT INTO c VALUES(2, 99, 'orphan: stored first, so its real rowid is 1');
+INSERT INTO c VALUES(1, 7,  'valid: its own rowid column says 1');
+PRAGMA foreign_key_check;
+DELETE FROM c WHERE rowid = 1;
+SELECT changes(); SELECT note FROM c; PRAGMA foreign_key_check;
+
+# Output:
+check reports:
+c|1|p|0
+rows deleted|1
+left in c:|orphan: stored first, so its real rowid is 1
+check again:
+c|1|p|0

@@ -72,7 +72,7 @@ That is the gap the phantom items came through. The fix is to run step 10.
 | **Walk the child tables** (`findAndClearTableAndChildren`) | Everything under a named table, through `PRAGMA foreign_key_list` | Has to be called, with the right table; clears whole tables only; recurses forever on a table that references itself (the README says it assumes no cycles) | One call per migration, remembered by its author | The talk's fix. Kept. |
 | **Sweep once** with `PRAGMA foreign_key_check` (`clearRowsWithoutParent` as it was) | Rows whose immediate parent is missing, with no table list | The children of the rows it deletes: on three levels it leaves the grandchildren | One call, remembered by the author | The talk's fix. Replaced by the next row. |
 | **Sweep until clean** | Whole chains of any depth, partial deletes, self-referencing tables | Tables whose rows cannot be deleted by rowid: it stops with an error | The same call | Ours. |
-| **Sweep at the end of every migration** (`thenClearRowsWithoutParent`) | The same, with nobody having to remember: applied once where migrations are registered | See limits below | One line at the registration site | Ours. |
+| **Sweep at the end of each wrapped migration** (`thenClearRowsWithoutParent`) | The same, with no author having to remember, provided the wrapper is applied where migrations are registered | A migration registered without the wrapper; see also the limits below | One line at the registration site | Ours. |
 | `PRAGMA foreign_keys = ON` inside the migration | | Everything: it is a no-op there | | Ruled out by the talk's own test |
 | `PRAGMA defer_foreign_keys` | | Everything: it defers enforcement, and there is none | | Ruled out on the `sqlite3` shell |
 | Enable enforcement in `onConfigure`, before the transaction | The forgotten `DELETE` would cascade | Every table rebuild then deletes child rows | A custom open helper | Rejected: with enforcement on, a rebuild loses child rows (measured) |
@@ -90,6 +90,14 @@ Limits of the sweep, all stated in the code or the pull requests:
 - It covers the whole database, so it also removes orphans an earlier release left behind.
 - It runs after every wrapped step. A migration that leaves orphans for a later step to
   re-parent would lose them.
+- It deletes by rowid. In a table that declares its own column named `rowid`, that name no
+  longer means the real rowid. The delete can then miss the orphan, or remove a valid row
+  whose column happens to hold that number
+  ([shown on the shell](evidence/sqlite-shadowed-rowid-deletes-valid-row.txt)). The guard
+  stops the sweep on the next pass, which inside a migration rolls the upgrade back; called
+  outside a transaction, the valid row is gone. Upstream's single pass deletes the same way.
+  Room entities cannot declare such a column by accident, and the code does not defend
+  against it.
 - The wrapper overrides `migrate(SupportSQLiteDatabase)`. With a `SQLiteDriver` set, Room calls
   the other overload and the wrapper fails with Room's `NotImplementedError`.
 
@@ -153,8 +161,8 @@ version is set to 42 through `openHelper.writableDatabase.version`, and a test-o
 - For a `WITHOUT ROWID` table the reported rowid is NULL, and `DELETE ... WHERE rowid` fails
   with `no such column: rowid`. So the sweep fails loudly there; it does not loop.
 - A table with its own column named `rowid` hides the real one. The delete then matches
-  nothing and the report never changes. Without the guard, that is an endless loop inside
-  a migration.
+  nothing, or the wrong row, and the report never changes. Without the guard, that is an
+  endless loop inside a migration.
 - `DROP TABLE` removes the table's `sqlite_sequence` row; `DELETE` keeps it. That is why the
   orphans re-attached only after a drop.
 - Room rewrites its identity hash after a successful migration, so a file created by one

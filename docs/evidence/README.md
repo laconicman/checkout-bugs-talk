@@ -20,6 +20,7 @@ of the same run.
 | File | What it shows |
 |---|---|
 | [sqlite-experiments.sh](sqlite-experiments.sh), [sqlite-experiments.out](sqlite-experiments.out) | Seven engine facts on the `sqlite3` shell, E1 to E7 |
+| [sqlite-shadowed-rowid-deletes-valid-row.txt](sqlite-shadowed-rowid-deletes-valid-row.txt) | With a declared integer `rowid` column, the delete by rowid removes a valid row and leaves the orphan |
 | [orphan-sweep-before-fix-messages.txt](orphan-sweep-before-fix-messages.txt), [log](orphan-sweep-before-fix.log) | The new tests against upstream's single pass: two fail with `expected:<1> but was:<2>` |
 | [orphan-sweep-hang-without-guard.log](orphan-sweep-hang-without-guard.log) | The repeating sweep without its guard, on a table with a `rowid` column: killed after 120 s |
 | [orphan-sweep-junit-timeout-does-not-bound.log](orphan-sweep-junit-timeout-does-not-bound.log) | The same hang with `@Test(timeout = 5_000)`: still killed, after 150 s |

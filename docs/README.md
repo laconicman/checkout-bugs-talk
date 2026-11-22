@@ -16,7 +16,7 @@ so the two can be read and run side by side.
 | Unit tests | 28 in 8 classes. They pass, but upstream's CI never ran them. | 47 in 10 classes |
 | On an Android runtime | none | 9 tests on an API 35 emulator |
 | Story 1, frozen app | A marker in the coroutine context rejects network calls at run time | Also: who really waits, the marker's blind spot, a transaction body that cannot suspend |
-| Story 2, phantom items | Walk the child tables by hand; or sweep orphans once | Also: the sweep repeats until clean and runs at the end of every migration; a real Room upgrade test |
+| Story 2, phantom items | Walk the child tables by hand; or sweep orphans once | Also: the sweep repeats until clean, and a wrapper runs it at the end of each migration registered through it; a real Room upgrade test |
 | Story 3, white screen | Imperative tiered loading | Also: every input starts as "not yet" and one `combine` derives the frame; a test that could not fail now can |
 
 To see the whole difference:

@@ -64,7 +64,7 @@ plan against upstream's code, never the diff. Each pull request said so.
 ## Review
 
 Every pull request on the fork was reviewed by Devin Review and audited with `contrib`
-until its verdict read `owed 0 · to re-read 0 · unexamined 0`. The fourteen findings and
+until its verdict read `owed 0 · to re-read 0 · unexamined 0`. The seventeen findings and
 what became of them are in the [changelog](changelog.md#review-rounds). The reviewer is
 steered by [REVIEW.md](../REVIEW.md), which exists only on this fork. We could not confirm
 whether the reviewer reads that file from the pull request's head or from the default branch.

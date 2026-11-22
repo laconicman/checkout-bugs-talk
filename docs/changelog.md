@@ -71,6 +71,7 @@ Kept on purpose. Each of these was a confident statement at the time.
 | The sweep needs a guard for `WITHOUT ROWID` tables, or it will loop | SQLite rejects the delete there; nothing loops | The planned test failed for an unpredicted reason before the fix |
 | No other input can stall the loop, so a general "no progress" check is unnecessary | A column named `rowid` stalls it. The suggestion we had dismissed was right. | Devin Review; then the `sqlite3` shell; then a 120 s hang |
 | `@RestrictsSuspension` can allow suspending DAO calls and forbid the rest | Members of a restricted type are restricted too | DeepWiki on the Kotlin compiler, fast mode; not compiled by us |
+| A shadowed `rowid` only makes the delete miss | It can also remove a valid row. The guard then stops the sweep, after the delete. | Devin Review on the docs; then the `sqlite3` shell |
 | JUnit's `@Test(timeout)` will bound a hanging test | Not under `RobolectricTestRunner` | Removing the guard and watching it hang |
 | "Did not finish in 2 s" shows a call was waiting | Only if the call had started | Devin Review |
 | `reader.isCompleted` shows the read succeeded | It is true for failures too, and depended on timing | Devin Review |
@@ -81,7 +82,7 @@ Kept on purpose. Each of these was a confident statement at the time.
 | The emulator job can run on every push | It was described as optional and cost six minutes each time | Devin Review |
 | A commit hash in a review reply stays valid | Not after a rebase | Our own re-read; replies edited in place |
 
-Of these fifteen, six were caught by the reviewer, five by our own tests, probes, builds and re-reading,
+Of these sixteen, seven were caught by the reviewer, five by our own tests, probes, builds and re-reading,
 three by reading sources, and one by DeepWiki.
 
 ## Review rounds
@@ -98,12 +99,14 @@ Each pull request was reviewed by Devin Review and audited until nothing was owe
 | #6 | 0 | | | |
 | #7 | 3 | 2: open silent inputs, the `RUB` assertion | 1: hot inputs without replay | |
 | #8 | 2 | 1: the job condition | | 1: one statement between signal and call |
-| Total | 14 | 9 and a half | 2 | 2 and a half |
+| #9, these pages | 3 | 2: wording about `Loading` first and about "every migration" | 1: a shadowed `rowid` can remove a valid row | |
+| Total | 17 | 11 and a half | 3 | 2 and a half |
 
 ## Not done
 
 - Nothing has been proposed upstream yet.
 - No cache for the Robolectric runtime.
+- No defence in the sweep against a table that declares its own `rowid` column.
 - No test for the sweep on a multi-step upgrade.
 - No run on a physical device or on another API level.
 - Nothing with a `SQLiteDriver`.
