@@ -7,7 +7,7 @@ coroutines.
 These are small educational reproductions. Tests assert the surprising behavior
 as well as countermeasures, so a successful run includes reproducing the bugs.
 There is no application UI, backend, account or emulator to set up.
-The suite contains 44 tests across ten classes.
+The suite contains 47 tests across ten classes.
 
 ## Run
 
@@ -32,7 +32,7 @@ Open this folder in Android Studio as a Gradle project to browse and debug the t
 | --- | --- | --- |
 | 1. The frozen app | [FrozenAppTest](src/test/kotlin/dev/checkout/talk/FrozenAppTest.kt) | A transaction waits for a database-backed flow in another scope; a slow call holds the transaction; a coroutine marker rejects network access. The marker's blind spot, and a transaction body that cannot suspend. |
 | 2. Phantom items | [OrderTablesCascadeTest](src/test/kotlin/dev/checkout/talk/OrderTablesCascadeTest.kt) | Cascades with foreign keys enabled versus disabled, then identifier reuse after dropping a table. |
-| 3. The white screen | [WhiteScreenTest](src/test/kotlin/dev/checkout/talk/WhiteScreenTest.kt) | `combine` waits for every source; staged loading can render before optional data arrives. |
+| 3. The white screen | [WhiteScreenTest](src/test/kotlin/dev/checkout/talk/WhiteScreenTest.kt) | `combine` waits for every source; staged loading can render before optional data arrives. Inputs that start as "not yet" keep a single `combine` and render at once. |
 
 For story 1, continue with:
 
