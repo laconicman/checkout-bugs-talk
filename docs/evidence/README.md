@@ -21,6 +21,8 @@ of the same run.
 |---|---|
 | [sqlite-experiments.sh](sqlite-experiments.sh), [sqlite-experiments.out](sqlite-experiments.out) | Seven engine facts on the `sqlite3` shell, E1 to E7 |
 | [sqlite-shadowed-rowid-deletes-valid-row.txt](sqlite-shadowed-rowid-deletes-valid-row.txt) | With a declared integer `rowid` column, the delete by rowid removes a valid row and leaves the orphan |
+| [orphan-sweep-shadowed-rowid-before-fix-messages.txt](orphan-sweep-shadowed-rowid-before-fix-messages.txt) | The same through the sweep, before it chose its rowid name: the guard stops it |
+| [sqlite-generated-rowid-column.txt](sqlite-generated-rowid-column.txt) | A generated column named `rowid` is missing from `table_info` |
 | [orphan-sweep-before-fix-messages.txt](orphan-sweep-before-fix-messages.txt), [log](orphan-sweep-before-fix.log) | The new tests against upstream's single pass: two fail with `expected:<1> but was:<2>` |
 | [orphan-sweep-hang-without-guard.log](orphan-sweep-hang-without-guard.log) | The repeating sweep without its guard, on a table with a `rowid` column: killed after 120 s |
 | [orphan-sweep-junit-timeout-does-not-bound.log](orphan-sweep-junit-timeout-does-not-bound.log) | The same hang with `@Test(timeout = 5_000)`: still killed, after 150 s |
@@ -44,7 +46,7 @@ of the same run.
 | [robolectric-runtime-download-flake.txt](robolectric-runtime-download-flake.txt) | Runs failing while Robolectric downloads its runtime, locally and on CI |
 | [device-apk-d8-space-in-name.txt](device-apk-d8-space-in-name.txt) | D8 rejecting a class name with spaces |
 | [device-apk-assemble-after-rename.log](device-apk-assemble-after-rename.log) | The instrumented APK building once the copied tests were renamed |
-| [unit-suite-main-run-45016675327.txt](unit-suite-main-run-45016675327.txt) | The unit suite on `main`, per class: 47 tests, 0 failures |
+| [unit-suite-main-run-45016675327.txt](unit-suite-main-run-45016675327.txt) | The unit suite on `main` after the first merge, per class: 47 tests, 0 failures. One test was added later. |
 
 ## Not kept here
 

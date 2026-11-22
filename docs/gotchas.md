@@ -14,7 +14,9 @@ comes from source or documentation and nothing here demonstrates it.
 | `foreign_key_check` works with enforcement off and inside a transaction | It can be the last statement of a migration | [E1](evidence/sqlite-experiments.out) |
 | A missing parent table is not an error for the check: every child row is reported | The sweep also cleans up after a dropped parent | [E2](evidence/sqlite-experiments.out) |
 | For a `WITHOUT ROWID` table the check reports a NULL rowid | `DELETE ... WHERE rowid` fails with `no such column: rowid` | [E3](evidence/sqlite-experiments.out); [messages](evidence/orphan-sweep-before-fix-messages.txt) |
-| A column named `rowid` hides the real rowid | A delete by rowid matches nothing, or a different, valid row; a loop around it never ends | `stops instead of looping when a pass removes nothing`; [shell](evidence/sqlite-shadowed-rowid-deletes-valid-row.txt) |
+| A declared column named `rowid`, `_rowid_` or `oid` takes that name over | A delete by that name matches nothing, or a different, valid row | `removes the orphan and not a valid row when a column is named rowid`; [shell](evidence/sqlite-shadowed-rowid-deletes-valid-row.txt) |
+| `PRAGMA table_info` leaves generated columns out; `table_xinfo` has them but needs SQLite 3.26 | A generated column named `rowid` is not noticed by the sweep | [shell](evidence/sqlite-generated-rowid-column.txt) |
+| A `BEFORE DELETE` trigger with `RAISE(IGNORE)` vetoes a delete silently | A sweep that repeats until clean would never finish without a progress check | `stops instead of looping when a pass removes nothing` |
 | `DROP TABLE` removes the table's `sqlite_sequence` row; `DELETE` keeps it | Ids restart after a drop, so old orphans attach to new rows | The talk's `PhantomRidsTest`; [E6](evidence/sqlite-experiments.out) |
 | `PRAGMA defer_foreign_keys` does nothing while enforcement is off | It is not a way around the migration problem | [E7](evidence/sqlite-experiments.out) |
 

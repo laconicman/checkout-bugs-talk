@@ -36,6 +36,7 @@ mirror, and the emulator run.
 | [SQLite Foreign Key Support](https://www.sqlite.org/foreignkeys.html#fk_enable) | «2. Enabling Foreign Key Support» | The pragma has no effect inside a transaction |
 | [SQLite Foreign Key Support](https://www.sqlite.org/foreignkeys.html#fk_schemacommands) | «5. CREATE, ALTER and DROP TABLE commands» | `DROP TABLE` deletes the rows first, and that may invoke foreign key actions |
 | [ALTER TABLE](https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes) | «8. Making Other Kinds Of Table Schema Changes» | The twelve steps: foreign keys off first (step 1), `foreign_key_check` near the end (step 10) |
+| [CREATE TABLE](https://www.sqlite.org/lang_createtable.html#rowids_and_the_integer_primary_key) | «5. ROWIDs and the INTEGER PRIMARY KEY» | A declared column named `rowid`, `oid` or `_rowid_` takes that name over |
 | [setup-android README](https://github.com/android-actions/setup-android#additional-packages) | «Additional packages» | An empty `packages` input skips the default packages |
 
 ## DeepWiki conversations
@@ -64,7 +65,7 @@ plan against upstream's code, never the diff. Each pull request said so.
 ## Review
 
 Every pull request on the fork was reviewed by Devin Review and audited with `contrib`
-until its verdict read `owed 0 · to re-read 0 · unexamined 0`. The seventeen findings and
+until its verdict read `owed 0 · to re-read 0 · unexamined 0`. The eighteen findings and
 what became of them are in the [changelog](changelog.md#review-rounds). The reviewer is
 steered by [REVIEW.md](../REVIEW.md), which exists only on this fork. We could not confirm
 whether the reviewer reads that file from the pull request's head or from the default branch.

@@ -1,0 +1,9 @@
+# OrphanCleanerTest with the new test, against the sweep that deletes WHERE rowid = N. From the JUnit XML of that run, 2026-11-22.
+# The sweep removed the valid row, the orphan was reported again, and the progress guard stopped it.
+tests=6 failures=1
+ok   clears the whole chain under an orphan, not just its first level
+FAIL removes the orphan and not a valid row when a column is named rowid | java.lang.IllegalStateException: Deleting by rowid removed none of [(Tag, 1)]
+ok   clears exactly the rows the migration orphaned
+ok   stops instead of looping when a pass removes nothing
+ok   clears a chain inside a self-referencing table
+ok   does nothing when every row still has its parent

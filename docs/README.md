@@ -13,7 +13,7 @@ so the two can be read and run side by side.
 | | Upstream `main` (`a6d80b5`) | This fork's `main` |
 |---|---|---|
 | CI | Never reached Gradle: fails in SDK setup after 29 s | Green; optional emulator job |
-| Unit tests | 28 in 8 classes. They pass, but upstream's CI never ran them. | 47 in 10 classes |
+| Unit tests | 28 in 8 classes. They pass, but upstream's CI never ran them. | 48 in 10 classes |
 | On an Android runtime | none | 9 tests on an API 35 emulator |
 | Story 1, frozen app | A marker in the coroutine context rejects network calls at run time | Also: who really waits, the marker's blind spot, a transaction body that cannot suspend |
 | Story 2, phantom items | Walk the child tables by hand; or sweep orphans once | Also: the sweep repeats until clean, and a wrapper runs it at the end of each migration registered through it; a real Room upgrade test |
@@ -28,7 +28,7 @@ git diff upstream/main main -- . ':!docs' ':!.devin' ':!REVIEW.md'
 ```
 
 or [compare on GitHub](https://github.com/chernybro/checkout-bugs-talk/compare/main...laconicman:checkout-bugs-talk:main).
-That is 17 files, 860 lines added and 18 removed, most of it tests.
+That is 17 files, 896 lines added and 18 removed, most of it tests.
 
 ## Pages
 
@@ -54,6 +54,8 @@ Every page separates three kinds of statement:
 ## Status
 
 - Merged here: eight reviewed pull requests, [#1](https://github.com/laconicman/checkout-bugs-talk/pull/1)
-  to [#8](https://github.com/laconicman/checkout-bugs-talk/pull/8), in one merge commit. See the [changelog](changelog.md).
-- Sent upstream: nothing yet. The branches are kept so that each change can be proposed on its own.
+  to [#8](https://github.com/laconicman/checkout-bugs-talk/pull/8), in one merge commit, and one later fix,
+  [#10](https://github.com/laconicman/checkout-bugs-talk/pull/10). See the [changelog](changelog.md).
+- Sent upstream: the CI repair, as [chernybro/checkout-bugs-talk#1](https://github.com/chernybro/checkout-bugs-talk/pull/1).
+  The other branches are kept so that each change can be proposed on its own.
 - Not verified anywhere: a physical device, API levels other than 35, Room with a `SQLiteDriver` set.

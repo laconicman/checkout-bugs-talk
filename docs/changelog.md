@@ -3,7 +3,7 @@
 Base: upstream `main` at `a6d80b5` (2026-11-02). Everything below reached this fork's `main`
 in one merge commit, `7d901b1`, so that each change keeps the hash of its branch.
 
-## The eight changes
+## The changes
 
 | # | Branch | Commit | Kind | What changed | Unit tests after |
 |---|---|---|---|---|---|
@@ -15,9 +15,13 @@ in one merge commit, `7d901b1`, so that each change keeps the hash of its branch
 | [6](https://github.com/laconicman/checkout-bugs-talk/pull/6) | `test/white-screen-collects` | `4a5209c` | minor, a real defect | One line so that an existing test can fail | 44 |
 | [7](https://github.com/laconicman/checkout-bugs-talk/pull/7) | `feat/white-screen-initial-values` | `4e56051` | pivotal fix | Inputs that start as "not yet", one `combine` | 47 |
 | [8](https://github.com/laconicman/checkout-bugs-talk/pull/8) | `ci/emulator-device-tests` | `e588d5c` | optional | Emulator job and instrumented copies of two classes | 47, and 9 on device |
+| [10](https://github.com/laconicman/checkout-bugs-talk/pull/10) | `fix/sweep-shadowed-rowid` | `9a3a612` | fix | The sweep addresses rows by a rowid name the table has left free | 48 |
 
-Fork only, not meant for upstream: `REVIEW.md` (`71b156d`), this `docs/` folder, and the
-merge commit.
+The first eight reached `main` in one merge commit, `7d901b1`. The ninth change was found
+while these pages were reviewed, and merged on its own as `a754010`.
+
+Fork only, not meant for upstream: `REVIEW.md` (`71b156d`), this `docs/` folder
+([#9](https://github.com/laconicman/checkout-bugs-talk/pull/9)), and the merge commits.
 
 ## Pivotal changes
 
@@ -35,7 +39,7 @@ merge commit.
 | Change | Where | Why |
 |---|---|---|
 | CI reaches Gradle | `.github/workflows/tests.yml` | The default packages of `setup-android@v3` include one that no longer exists |
-| Test and class counts kept true in every step | `README.md` | The README states them; they went 28 → 31 → 34 → 36 → 44 → 47, eight → ten classes |
+| Test and class counts kept true in every step | `README.md` | The README states them; they went 28 → 31 → 34 → 36 → 44 → 47 → 48, eight → ten classes |
 | "For story 1, continue with" list | `README.md` | Story 2 had such a list; story 1 now has a second class |
 | `RealRoomMigrationTest` added to the story 2 list | `README.md` | |
 | Story table rows 1 and 3 extended | `README.md` | Each names what was added |
@@ -71,7 +75,7 @@ Kept on purpose. Each of these was a confident statement at the time.
 | The sweep needs a guard for `WITHOUT ROWID` tables, or it will loop | SQLite rejects the delete there; nothing loops | The planned test failed for an unpredicted reason before the fix |
 | No other input can stall the loop, so a general "no progress" check is unnecessary | A column named `rowid` stalls it. The suggestion we had dismissed was right. | Devin Review; then the `sqlite3` shell; then a 120 s hang |
 | `@RestrictsSuspension` can allow suspending DAO calls and forbid the rest | Members of a restricted type are restricted too | DeepWiki on the Kotlin compiler, fast mode; not compiled by us |
-| A shadowed `rowid` only makes the delete miss | It can also remove a valid row. The guard then stops the sweep, after the delete. | Devin Review on the docs; then the `sqlite3` shell |
+| A shadowed `rowid` only makes the delete miss | It can also remove a valid row. Fixed in #10: the sweep uses a rowid name the table has left free. | Devin Review on the docs; then the `sqlite3` shell |
 | JUnit's `@Test(timeout)` will bound a hanging test | Not under `RobolectricTestRunner` | Removing the guard and watching it hang |
 | "Did not finish in 2 s" shows a call was waiting | Only if the call had started | Devin Review |
 | `reader.isCompleted` shows the read succeeded | It is true for failures too, and depended on timing | Devin Review |
@@ -99,14 +103,15 @@ Each pull request was reviewed by Devin Review and audited until nothing was owe
 | #6 | 0 | | | |
 | #7 | 3 | 2: open silent inputs, the `RUB` assertion | 1: hot inputs without replay | |
 | #8 | 2 | 1: the job condition | | 1: one statement between signal and call |
-| #9, these pages | 3 | 2: wording about `Loading` first and about "every migration" | 1: a shadowed `rowid` can remove a valid row | |
-| Total | 17 | 11 and a half | 3 | 2 and a half |
+| #9, these pages | 3 | 3: wording about `Loading` first and about "every migration"; the shadowed `rowid`, fixed in #10 | | |
+| #10 | 1 | | 1: a generated column named `rowid` | |
+| Total | 18 | 12 and a half | 3 | 2 and a half |
 
 ## Not done
 
-- Nothing has been proposed upstream yet.
+- Upstream has the CI repair as an open pull request. Nothing else has been proposed yet.
 - No cache for the Robolectric runtime.
-- No defence in the sweep against a table that declares its own `rowid` column.
+- No handling of a generated column named `rowid`.
 - No test for the sweep on a multi-step upgrade.
 - No run on a physical device or on another API level.
 - Nothing with a `SQLiteDriver`.
