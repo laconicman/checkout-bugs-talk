@@ -107,17 +107,40 @@ class OrphanCleanerTest : SQLiteDatabaseTest by SQLiteDatabaseTest(
         assertEquals(1, db.countOf("Category", "id = 4"))
     }
 
-    /** A column named `rowid` hides the real one, so the delete finds nothing to remove. */
+    /** A column named `rowid` hides the real one, so the sweep must address the row another way. */
     @Test
-    fun `stops instead of looping when a pass removes nothing`() = runBlocking {
+    fun `removes the orphan and not a valid row when a column is named rowid`() {
         db.execSQL(
             "CREATE TABLE Tag (" +
-                "rowid TEXT NOT NULL, " +
+                "rowid INTEGER NOT NULL, " +
                 "orderId INTEGER NOT NULL, " +
                 "FOREIGN KEY(orderId) REFERENCES OrderEntity(id) ON DELETE CASCADE" +
                 ")"
         )
-        db.asMigration { execSQL("INSERT INTO Tag (rowid, orderId) VALUES ('gift', 1)") }
+        db.execSQL("INSERT INTO OrderEntity (id) VALUES (7)")
+        db.asMigration {
+            execSQL("INSERT INTO Tag (rowid, orderId) VALUES (2, 99)") // the orphan; its real rowid is 1
+            execSQL("INSERT INTO Tag (rowid, orderId) VALUES (1, 7)") // valid; its own column says 1
+        }
+
+        db.clearRowsWithoutParent()
+
+        assertEquals(1, db.countOf("Tag"))
+        assertEquals(1, db.countOf("Tag", "orderId = 7"))
+    }
+
+    /** A trigger can veto the delete, and then the next check reports the same rows again. */
+    @Test
+    fun `stops instead of looping when a pass removes nothing`() = runBlocking {
+        db.execSQL(
+            "CREATE TABLE Tag (" +
+                "name TEXT NOT NULL, " +
+                "orderId INTEGER NOT NULL, " +
+                "FOREIGN KEY(orderId) REFERENCES OrderEntity(id) ON DELETE CASCADE" +
+                ")"
+        )
+        db.execSQL("CREATE TRIGGER KeepTags BEFORE DELETE ON Tag BEGIN SELECT RAISE(IGNORE); END")
+        db.asMigration { execSQL("INSERT INTO Tag (name, orderId) VALUES ('gift', 1)") }
 
         // Off the test thread and bounded: without the guard this call would never return.
         val sweep = CoroutineScope(Dispatchers.IO).async { runCatching { db.clearRowsWithoutParent() } }
