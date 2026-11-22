@@ -56,6 +56,18 @@ Run one story:
 The HTML report is `build/reports/tests/testDebugUnitTest/index.html`.
 Use `--rerun-tasks` for a fresh run before presenting.
 
+## On a device (optional)
+
+`RealRoomMigrationTest` and `FrozenAppTopologyTest` have instrumented copies in
+`src/androidTest/kotlin/dev/checkout/talk`. With a device or an emulator connected:
+
+```sh
+./gradlew connectedDebugAndroidTest
+```
+
+The `device` job of the workflow runs them on an API 35 emulator. It runs when the
+workflow is started by hand and on pushes to `main`, not on every push.
+
 ## Scope of the examples
 
 Most migration examples explicitly toggle SQLite foreign-key enforcement to model

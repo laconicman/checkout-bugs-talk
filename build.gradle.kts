@@ -6,7 +6,10 @@ plugins {
 android {
     namespace = "dev.checkout.talk"
     compileSdk = 36
-    defaultConfig { minSdk = 23 }
+    defaultConfig {
+        minSdk = 23
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -20,10 +23,14 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     ksp("androidx.room:room-compiler:2.8.4")
     kspTest("androidx.room:room-compiler:2.8.4")
+    kspAndroidTest("androidx.room:room-compiler:2.8.4")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.3.21")
     testImplementation("androidx.test:core:1.7.0")
     testImplementation("androidx.test:runner:1.7.0")
     testImplementation("androidx.sqlite:sqlite-framework:2.6.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     testImplementation("org.robolectric:robolectric:4.17-beta-2")
+    androidTestImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.3.21")
+    androidTestImplementation("androidx.test:runner:1.7.0")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
 }
