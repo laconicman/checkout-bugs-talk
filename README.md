@@ -7,7 +7,7 @@ coroutines.
 These are small educational reproductions. Tests assert the surprising behavior
 as well as countermeasures, so a successful run includes reproducing the bugs.
 There is no application UI, backend, account or emulator to set up.
-The suite contains 36 tests across nine classes.
+The suite contains 42 tests across ten classes.
 
 ## Run
 
@@ -33,6 +33,10 @@ Open this folder in Android Studio as a Gradle project to browse and debug the t
 | 1. The frozen app | [FrozenAppTest](src/test/kotlin/dev/checkout/talk/FrozenAppTest.kt) | A transaction waits for a database-backed flow in another scope; a slow call holds the transaction; a coroutine marker rejects network access. |
 | 2. Phantom items | [OrderTablesCascadeTest](src/test/kotlin/dev/checkout/talk/OrderTablesCascadeTest.kt) | Cascades with foreign keys enabled versus disabled, then identifier reuse after dropping a table. |
 | 3. The white screen | [WhiteScreenTest](src/test/kotlin/dev/checkout/talk/WhiteScreenTest.kt) | `combine` waits for every source; staged loading can render before optional data arrives. |
+
+For story 1, continue with:
+
+- [FrozenAppTopologyTest](src/test/kotlin/dev/checkout/talk/FrozenAppTopologyTest.kt): which calls wait for an open transaction on an in-memory database, a rollback-journal file and a write-ahead-log file.
 
 For story 2, continue with:
 

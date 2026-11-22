@@ -38,7 +38,9 @@ import kotlin.time.Duration.Companion.seconds
  *
  * The order-save transaction awaited a value it could only get by going back to the
  * database (and, three layers down, to the network). The transaction holds the write
- * lock for the whole wait, so every other database call queues behind it.
+ * lock for the whole wait, so other database calls queue behind it: all of them on the
+ * in-memory database used here, all but plain reads under write-ahead logging (see
+ * [FrozenAppTopologyTest]).
  */
 @Config(sdk = [35])
 @RunWith(RobolectricTestRunner::class)
