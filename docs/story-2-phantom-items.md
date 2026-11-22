@@ -90,14 +90,14 @@ Limits of the sweep, all stated in the code or the pull requests:
 - It covers the whole database, so it also removes orphans an earlier release left behind.
 - It runs after every wrapped step. A migration that leaves orphans for a later step to
   re-parent would lose them.
-- It deletes by rowid. In a table that declares its own column named `rowid`, that name no
-  longer means the real rowid. The delete can then miss the orphan, or remove a valid row
-  whose column happens to hold that number
-  ([shown on the shell](evidence/sqlite-shadowed-rowid-deletes-valid-row.txt)). The guard
-  stops the sweep on the next pass, which inside a migration rolls the upgrade back; called
-  outside a transaction, the valid row is gone. Upstream's single pass deletes the same way.
-  Room entities cannot declare such a column by accident, and the code does not defend
-  against it.
+- It reaches rows by rowid, under a name the table has left free. Two schemas defeat that. A
+  generated column named `rowid` is invisible to `table_info`
+  ([shell](evidence/sqlite-generated-rowid-column.txt)); `table_xinfo` would show it, but
+  does not exist before SQLite 3.26, which `minSdk` 23 still reaches. On such a table the sweep can
+  still remove a valid row whose generated value equals the orphan's rowid. The guard stops
+  it on the next pass, which rolls back inside a migration; outside a transaction that row
+  is gone. And a table that declares all three names leaves none; the sweep then fails with
+  an exception.
 - The wrapper overrides `migrate(SupportSQLiteDatabase)`. With a `SQLiteDriver` set, Room calls
   the other overload and the wrapper fails with Room's `NotImplementedError`.
 
@@ -110,12 +110,16 @@ fun SupportSQLiteDatabase.clearRowsWithoutParent() {
         val violations = readForeignKeyViolations()
         if (violations.isEmpty()) return
         check(violations != previous) { "Deleting by rowid removed none of $violations" }
-        violations.forEach { (table, rowId) ->
-            execSQL("DELETE FROM $table WHERE rowid = $rowId")
+        violations.groupBy({ it.first }, { it.second }).forEach { (table, rowIds) ->
+            val rowIdName = rowIdNameOf(table)
+            rowIds.forEach { execSQL("DELETE FROM $table WHERE $rowIdName = $it") }
         }
         previous = violations
     }
 }
+
+/** A name that still reaches the real rowid: `rowid`, `_rowid_` or `oid`, whichever the table has not declared. */
+private fun SupportSQLiteDatabase.rowIdNameOf(table: String): String { /* reads PRAGMA table_info */ }
 
 fun Migration.thenClearRowsWithoutParent(): Migration = object : Migration(startVersion, endVersion) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -142,7 +146,8 @@ Only the tests this fork added are listed. The talk's are described in the root 
 |---|---|---|
 | `clears the whole chain under an orphan, not just its first level` | One pass is not enough on three levels | Fails on upstream code with `expected:<1> but was:<2>`: the rid survives. Passes with the loop. |
 | `clears a chain inside a self-referencing table` | A schema the walker cannot take | Fails on upstream code the same way |
-| `stops instead of looping when a pass removes nothing` | The loop must end on every input | With the guard removed the sweep never returns; the test fails after its own 5 s bound |
+| `removes the orphan and not a valid row when a column is named rowid` | A declared `rowid` column takes the name over | Before the fix the sweep removed the valid row and the guard stopped it with `Deleting by rowid removed none of [(Tag, 1)]`. After it, the valid row stays and the orphan goes. |
+| `stops instead of looping when a pass removes nothing` | The loop must end on every input | A trigger vetoes the delete. With the guard removed the sweep never returns; the test fails after its own 5 s bound |
 | `Room runs a migration before it has turned foreign keys on` | The mechanism, on a real Room upgrade of a file database | Reads the pragma inside `migrate()` and after open: 0, in a transaction, then 1 |
 | `the broken migration orphans the products on a real upgrade` | The bug without any hand-toggled pragma | Room itself runs the talk's migration: 0 orders, 2 products |
 | `the same migration followed by the sweep leaves no orphans` | The fix on the real path | The same migration, wrapped: 0 and 0 |
@@ -160,9 +165,11 @@ version is set to 42 through `openHelper.writableDatabase.version`, and a test-o
 - If the parent table does not exist at all, every child row is reported. It is not an error.
 - For a `WITHOUT ROWID` table the reported rowid is NULL, and `DELETE ... WHERE rowid` fails
   with `no such column: rowid`. So the sweep fails loudly there; it does not loop.
-- A table with its own column named `rowid` hides the real one. The delete then matches
-  nothing, or the wrong row, and the report never changes. Without the guard, that is an
-  endless loop inside a migration.
+- A table with its own column named `rowid` hides the real one. A delete by that name
+  matches nothing, or the wrong row. The sweep therefore asks `table_info` and uses whichever
+  of `rowid`, `_rowid_`, `oid` the table has left free.
+- A `BEFORE DELETE` trigger with `RAISE(IGNORE)` vetoes a delete without an error. The
+  report then never changes; the guard exists for inputs like this.
 - `DROP TABLE` removes the table's `sqlite_sequence` row; `DELETE` keeps it. That is why the
   orphans re-attached only after a drop.
 - Room rewrites its identity hash after a successful migration, so a file created by one
@@ -200,7 +207,15 @@ showed that SQLite already rejects the delete there, so the guard and the test w
 
 The loop without its guard, on a table with a `rowid` column
 ([log](evidence/orphan-sweep-hang-without-guard.log)): the Gradle run was killed after 120 s
-with no test result written.
+with no test result written. That was before the sweep chose its rowid name.
+
+The sweep against a declared integer `rowid` column, before that fix
+([messages](evidence/orphan-sweep-shadowed-rowid-before-fix-messages.txt),
+[shell session](evidence/sqlite-shadowed-rowid-deletes-valid-row.txt)):
+
+```
+FAIL removes the orphan and not a valid row when a column is named rowid | java.lang.IllegalStateException: Deleting by rowid removed none of [(Tag, 1)]
+```
 
 On the emulator ([results](evidence/device-main-run-45016675327.xml)): all three
 `RealRoomMigrationTest` cases pass on Android 15.

@@ -1,0 +1,12 @@
+# sqlite3 shell, 3.54.0, 2026-11-22. A generated column named rowid is missing from table_info
+# and present in table_xinfo. It still takes the name over: the delete by rowid finds nothing.
+
+CREATE TABLE p(id INTEGER PRIMARY KEY);
+CREATE TABLE g(a INTEGER, "rowid" INTEGER GENERATED ALWAYS AS (a + 100) VIRTUAL, pid INTEGER NOT NULL REFERENCES p(id));
+
+# Output:
+table_info :|a,pid
+table_xinfo:|a,rowid,pid
+g|1|p|0
+deleted via rowid|0
+deleted via _rowid_|1
