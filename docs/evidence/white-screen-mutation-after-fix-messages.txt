@@ -1,0 +1,9 @@
+# WhiteScreenTest with the silent input of the first test replaced by flowOf("promo"), on main (7d901b1), i.e. with runCurrent().
+# Re-run on 2026-11-22 to keep the assertion message; the Gradle console log shows only the line number.
+tests=6 failures=1
+FAIL combine renders nothing while one input stays silent | java.lang.AssertionError: actual value is not null expected null, but was:<Screen(products=products, user=user, currency=RUB, promos=promo)>
+ok   inputs that start as not-yet render the first frame without the optional one
+ok   tiered loading renders the first frame without the optional tier
+ok   combine renders only once the last input finally emits
+ok   a mandatory input that changes later updates the frame
+ok   a silent mandatory input renders loading instead of nothing

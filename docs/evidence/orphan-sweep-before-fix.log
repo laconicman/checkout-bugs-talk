@@ -1,0 +1,73 @@
+> Task :preBuild UP-TO-DATE
+> Task :preDebugBuild UP-TO-DATE
+> Task :generateDebugResources UP-TO-DATE
+> Task :packageDebugResources UP-TO-DATE
+> Task :processDebugNavigationResources UP-TO-DATE
+> Task :parseDebugLocalResources UP-TO-DATE
+> Task :generateDebugRFile UP-TO-DATE
+> Task :kspDebugKotlin UP-TO-DATE
+> Task :compileDebugKotlin UP-TO-DATE
+> Task :javaPreCompileDebug UP-TO-DATE
+> Task :compileDebugJavaWithJavac NO-SOURCE
+> Task :bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :bundleLibCompileToJarDebug UP-TO-DATE
+> Task :preDebugUnitTestBuild UP-TO-DATE
+> Task :writeDebugAarMetadata UP-TO-DATE
+> Task :checkDebugUnitTestAarMetadata UP-TO-DATE
+> Task :mapDebugSourceSetPaths UP-TO-DATE
+> Task :compileDebugLibraryResources UP-TO-DATE
+> Task :mapDebugUnitTestSourceSetPaths UP-TO-DATE
+> Task :generateDebugUnitTestResources UP-TO-DATE
+> Task :mergeDebugUnitTestResources UP-TO-DATE
+> Task :extractDeepLinksDebug UP-TO-DATE
+> Task :processDebugManifest UP-TO-DATE
+> Task :processDebugUnitTestManifest UP-TO-DATE
+> Task :processDebugUnitTestResources UP-TO-DATE
+> Task :kspDebugUnitTestKotlin
+> Task :javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :generateDebugUnitTestAssets UP-TO-DATE
+> Task :generateDebugAssets UP-TO-DATE
+> Task :mergeDebugAssets UP-TO-DATE
+> Task :mergeDebugUnitTestAssets UP-TO-DATE
+> Task :packageDebugUnitTestForUnitTest UP-TO-DATE
+> Task :generateDebugUnitTestConfig UP-TO-DATE
+> Task :processDebugJavaRes UP-TO-DATE
+> Task :compileDebugUnitTestKotlin
+> Task :compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :processDebugUnitTestJavaRes UP-TO-DATE
+
+> Task :testDebugUnitTest
+
+OrphanCleanerTest > clears the whole chain under an orphan, not just its first level FAILED
+    java.lang.AssertionError at OrphanCleanerTest.kt:81
+
+OrphanCleanerTest > refuses a WITHOUT ROWID child rather than spin FAILED
+    java.lang.AssertionError at OrphanCleanerTest.kt:116
+        Caused by: android.database.sqlite.SQLiteException at OrphanCleanerTest.kt:116
+
+OrphanCleanerTest > clears a chain inside a self-referencing table FAILED
+    java.lang.AssertionError at OrphanCleanerTest.kt:100
+
+5 tests completed, 3 failed
+
+> Task :testDebugUnitTest FAILED
+
+[Incubating] Problems report is available at: build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':testDebugUnitTest'.
+> There were failing tests. See the report at: build/reports/tests/testDebugUnitTest/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1m 12s
+31 actionable tasks: 3 executed, 28 up-to-date

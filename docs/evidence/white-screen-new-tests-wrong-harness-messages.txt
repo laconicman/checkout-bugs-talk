@@ -1,0 +1,8 @@
+# WhiteScreenTest with the three new tests collecting in backgroundScope and calling advanceUntilIdle(). From the JUnit XML of that run.
+tests=6 failures=3
+ok   combine renders nothing while one input stays silent
+FAIL inputs that start as not-yet render the first frame without the optional one | java.util.NoSuchElementException: List is empty.
+ok   tiered loading renders the first frame without the optional tier
+ok   combine renders only once the last input finally emits
+FAIL a mandatory input that changes later updates the frame | java.util.NoSuchElementException: List is empty.
+FAIL a silent mandatory input renders loading instead of nothing | java.lang.AssertionError: expected:<[Loading]> but was:<[]>

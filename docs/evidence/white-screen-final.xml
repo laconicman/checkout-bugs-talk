@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.checkout.talk.WhiteScreenTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-22T10:23:51.969Z" hostname="host" time="0.25">
+  <properties/>
+  <testcase name="combine renders nothing while one input stays silent" classname="dev.checkout.talk.WhiteScreenTest" time="0.185"/>
+  <testcase name="inputs that start as not-yet render the first frame without the optional one" classname="dev.checkout.talk.WhiteScreenTest" time="0.026"/>
+  <testcase name="tiered loading renders the first frame without the optional tier" classname="dev.checkout.talk.WhiteScreenTest" time="0.008"/>
+  <testcase name="combine renders only once the last input finally emits" classname="dev.checkout.talk.WhiteScreenTest" time="0.009"/>
+  <testcase name="a mandatory input that changes later updates the frame" classname="dev.checkout.talk.WhiteScreenTest" time="0.008"/>
+  <testcase name="a silent mandatory input renders loading instead of nothing" classname="dev.checkout.talk.WhiteScreenTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,29 @@
+# Probe run on 2026-11-22 against kotlinx-coroutines-test 1.10.2, as a temporary test that was
+# deleted afterwards. It separates two explanations for "the collector saw nothing":
+# (1) combine treats null as "no value yet"; (2) advanceUntilIdle() does not run work that
+# lives only in backgroundScope. The output rules out (1) and confirms (2).
+
+@Test
+fun probe() = runTest {
+    val a = mutableListOf<String>()
+    combine(flowOf("x"), flowOf("y")) { p, q -> "$p$q" }.onEach { a += it }.launchIn(backgroundScope)
+    advanceUntilIdle()
+    println("PROBE A nonnull, backgroundScope + advanceUntilIdle: $a")
+
+    val b = mutableListOf<String>()
+    launch { combine(flowOf<String?>(null), flowOf("y")) { p, q -> "$p$q" }.collect { b += it } }
+    advanceUntilIdle()
+    println("PROBE B null value, foreground launch + advanceUntilIdle: $b")
+
+    val c = mutableListOf<String>()
+    combine(flowOf<String?>(null), flowOf("y")) { p, q -> "$p$q" }.onEach { c += it }.launchIn(backgroundScope)
+    runCurrent()
+    println("PROBE C null value, backgroundScope + runCurrent: $c")
+    println("PROBE A again after runCurrent: $a")
+}
+
+# Output:
+PROBE A nonnull, backgroundScope + advanceUntilIdle: []
+PROBE B null value, foreground launch + advanceUntilIdle: [nully]
+PROBE C null value, backgroundScope + runCurrent: [nully]
+PROBE A again after runCurrent: [xy]

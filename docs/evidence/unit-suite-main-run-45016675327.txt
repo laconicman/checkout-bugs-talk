@@ -1,0 +1,12 @@
+# laconicman/checkout-bugs-talk, main, run 45016675327, job test, tallied from the uploaded test-results artifact
+FrozenAppTest                tests=5 failures=0 errors=0 time=11.587s
+FrozenAppTopologyTest        tests=6 failures=0 errors=0 time=10.228s
+OrderTablesCascadeTest       tests=4 failures=0 errors=0 time=0.126s
+OrphanCleanerTest            tests=5 failures=0 errors=0 time=0.124s
+PhantomOrderItemsTest        tests=5 failures=0 errors=0 time=0.102s
+PhantomRidsTest              tests=5 failures=0 errors=0 time=0.098s
+PragmaInsideTransactionTest  tests=4 failures=0 errors=0 time=0.066s
+RealRoomMigrationTest        tests=3 failures=0 errors=0 time=0.142s
+WhiteScreenTest              tests=6 failures=0 errors=0 time=0.105s
+WouldDeleteHaveHelpedTest    tests=4 failures=0 errors=0 time=0.08s
+total {'tests': 47, 'failures': 0, 'errors': 0, 'skipped': 0}

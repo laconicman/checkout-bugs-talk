@@ -1,0 +1,8 @@
+# 1. First local run of the untouched suite, 2026-11-22 (macOS arm64): one class failed in its class setup,
+#    while Robolectric was downloading its Android runtime; the next run passed with nothing changed.
+FrozenAppTest > classMethod FAILED
+26 tests completed, 1 failed
+BUILD FAILED in 7m 11s
+
+# 2. Fork CI, run 45007033735, first attempt: 8 of 9 classes failed the same way; the re-run passed.
+java.lang.AssertionError: Failed to fetch maven artifact org.robolectric:android-all-instrumented:15-robolectric-13954326-i7
