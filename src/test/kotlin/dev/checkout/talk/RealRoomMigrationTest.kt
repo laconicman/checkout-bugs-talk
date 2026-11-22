@@ -79,6 +79,15 @@ class RealRoomMigrationTest {
         assertEquals(2, db.orders().productCount()) // the cascade never fired
     }
 
+    /** The systemic fix on the real path: wrap the migration where it is registered. */
+    @Test
+    fun `the same migration followed by the sweep leaves no orphans`() = runBlocking {
+        upgrade(BrokenOrderQueueMigration().thenClearRowsWithoutParent())
+
+        assertEquals(0, db.orders().orderCount())
+        assertEquals(0, db.orders().productCount())
+    }
+
     private fun upgrade(migration: Migration) {
         db = Room.databaseBuilder(context, TalkDatabaseV43::class.java, NAME)
             .addMigrations(migration)

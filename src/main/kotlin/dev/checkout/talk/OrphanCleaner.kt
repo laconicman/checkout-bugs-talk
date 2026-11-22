@@ -1,5 +1,6 @@
 package dev.checkout.talk
 
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
@@ -20,6 +21,17 @@ fun SupportSQLiteDatabase.clearRowsWithoutParent() {
             execSQL("DELETE FROM $table WHERE rowid = $rowId")
         }
         previous = violations
+    }
+}
+
+/**
+ * The same migration followed by the repair, inside the transaction Room already opened.
+ * Wrap migrations where they are registered and no author has to remember the children.
+ */
+fun Migration.thenClearRowsWithoutParent(): Migration = object : Migration(startVersion, endVersion) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        this@thenClearRowsWithoutParent.migrate(db)
+        db.clearRowsWithoutParent()
     }
 }
 
