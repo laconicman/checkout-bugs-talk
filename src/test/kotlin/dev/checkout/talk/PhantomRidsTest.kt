@@ -122,7 +122,7 @@ class PhantomRidsTest : SQLiteDatabaseTest by SQLiteDatabaseTest(
         }
 
     private fun SupportSQLiteDatabase.asMigration(block: SupportSQLiteDatabase.() -> Unit) {
-        execSQL("PRAGMA foreign_keys = OFF") // Room does this for every migration
+        execSQL("PRAGMA foreign_keys = OFF") // Room's default state during a migration
         block()
     }
 }

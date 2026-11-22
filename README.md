@@ -7,7 +7,7 @@ coroutines.
 These are small educational reproductions. Tests assert the surprising behavior
 as well as countermeasures, so a successful run includes reproducing the bugs.
 There is no application UI, backend, account or emulator to set up.
-The suite contains 31 tests across eight classes.
+The suite contains 34 tests across nine classes.
 
 ## Run
 
@@ -41,6 +41,7 @@ For story 2, continue with:
 - [WouldDeleteHaveHelpedTest](src/test/kotlin/dev/checkout/talk/WouldDeleteHaveHelpedTest.kt): why `DELETE` and `DROP TABLE` differ, and why leaving orphans is still unsafe.
 - [PragmaInsideTransactionTest](src/test/kotlin/dev/checkout/talk/PragmaInsideTransactionTest.kt): changing `foreign_keys` inside a transaction has no effect.
 - [OrphanCleanerTest](src/test/kotlin/dev/checkout/talk/OrphanCleanerTest.kt): finding and removing broken references with `foreign_key_check`.
+- [RealRoomMigrationTest](src/test/kotlin/dev/checkout/talk/RealRoomMigrationTest.kt): the same orphans on a genuine Room upgrade of a file database, and where `foreign_keys` stands during and after it.
 
 Run one story:
 
@@ -53,8 +54,9 @@ Use `--rerun-tasks` for a fresh run before presenting.
 
 ## Scope of the examples
 
-The migration examples explicitly toggle SQLite foreign-key enforcement to model
-the migration environment; they do not run a complete Room version upgrade.
+Most migration examples explicitly toggle SQLite foreign-key enforcement to model
+the migration environment; only `RealRoomMigrationTest` runs a complete Room
+version upgrade.
 The deadlock test bounds its wait with a timeout. The network call is simulated.
 The cleanup helpers target these small demo schemas; they are not general-purpose
 migration utilities (for example, the descendant walker assumes no reference cycles).

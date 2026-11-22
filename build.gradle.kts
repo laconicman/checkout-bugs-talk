@@ -19,6 +19,7 @@ dependencies {
     implementation("androidx.room:room-ktx:2.8.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     ksp("androidx.room:room-compiler:2.8.4")
+    kspTest("androidx.room:room-compiler:2.8.4")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.3.21")
     testImplementation("androidx.test:core:1.7.0")
     testImplementation("androidx.test:runner:1.7.0")

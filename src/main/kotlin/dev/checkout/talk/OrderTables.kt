@@ -22,8 +22,8 @@ data class OrderEntity(
 
 /**
  * The child. The cascade here is correct — and that is the point of the story: a correct
- * `ON DELETE CASCADE` does nothing while the `foreign_keys` pragma is off, and Room turns
- * that pragma off for the duration of every migration.
+ * `ON DELETE CASCADE` does nothing while the `foreign_keys` pragma is off, and it is still
+ * off while Room runs a migration.
  */
 @Entity(
     foreignKeys = [
