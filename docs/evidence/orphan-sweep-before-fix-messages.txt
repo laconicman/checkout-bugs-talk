@@ -1,0 +1,8 @@
+# OrphanCleanerTest with the new tests, against upstream's single-pass clearRowsWithoutParent(). From the JUnit XML of that run.
+# The third test belongs to a guard that was later dropped: SQLite itself rejects the delete on a WITHOUT ROWID table.
+tests=5 failures=3
+FAIL clears the whole chain under an orphan, not just its first level | java.lang.AssertionError: expected:<1> but was:<2>
+ok   clears exactly the rows the migration orphaned
+FAIL refuses a WITHOUT ROWID child rather than spin | java.lang.AssertionError: Expected an exception of class java.lang.IllegalStateException to be thrown, but was android.database.sqlite.SQLiteException: no such column: rowid (code 1 SQLITE_ERROR): , while compiling: DELETE FROM Ta
+FAIL clears a chain inside a self-referencing table | java.lang.AssertionError: expected:<1> but was:<2>
+ok   does nothing when every row still has its parent

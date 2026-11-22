@@ -1,0 +1,35 @@
+sqlite version: 3.54.0
+
+=== E1 foreign_key_check works with FK OFF and inside BEGIN EXCLUSIVE; pragma toggle inside tx is ignored ===
+fk flag inside tx|0
+child rows after delete|1
+check inside tx:
+c|1|p|0
+
+=== E2 parent table dropped and NOT recreated ===
+check:
+c|1|p|0
+child rows|1
+
+=== E3 WITHOUT ROWID child: rowid column ===
+c|NULL|p|0
+
+=== E4 FK ON: DROP TABLE parent cascades into children (why 'just enable FKs' breaks table rebuilds) ===
+parents kept|1
+children kept|0
+
+=== E5 self-referencing table: one pass vs fixpoint ===
+pass 1:
+n|2|n|0
+pass 2:
+n|3|n|0
+pass 3:
+n|4|n|0
+pass 4 (empty = clean):
+
+=== E6 sqlite_sequence: DELETE keeps it, DROP removes it ===
+after DELETE|p|2
+after DROP rows:|0
+
+=== E7 defer_foreign_keys while foreign_keys is OFF ===
+orphans survive commit|1

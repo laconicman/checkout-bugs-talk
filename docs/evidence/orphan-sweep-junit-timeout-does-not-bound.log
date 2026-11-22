@@ -1,0 +1,39 @@
+> Task :preBuild UP-TO-DATE
+> Task :preDebugBuild UP-TO-DATE
+> Task :generateDebugResources UP-TO-DATE
+> Task :packageDebugResources UP-TO-DATE
+> Task :processDebugNavigationResources UP-TO-DATE
+> Task :parseDebugLocalResources UP-TO-DATE
+> Task :generateDebugRFile UP-TO-DATE
+> Task :javaPreCompileDebug UP-TO-DATE
+> Task :preDebugUnitTestBuild UP-TO-DATE
+> Task :writeDebugAarMetadata UP-TO-DATE
+> Task :checkDebugUnitTestAarMetadata UP-TO-DATE
+> Task :mapDebugSourceSetPaths UP-TO-DATE
+> Task :compileDebugLibraryResources UP-TO-DATE
+> Task :mapDebugUnitTestSourceSetPaths UP-TO-DATE
+> Task :generateDebugUnitTestResources UP-TO-DATE
+> Task :mergeDebugUnitTestResources UP-TO-DATE
+> Task :extractDeepLinksDebug UP-TO-DATE
+> Task :processDebugManifest UP-TO-DATE
+> Task :processDebugUnitTestManifest UP-TO-DATE
+> Task :processDebugUnitTestResources UP-TO-DATE
+> Task :generateDebugUnitTestAssets UP-TO-DATE
+> Task :generateDebugAssets UP-TO-DATE
+> Task :javaPreCompileDebugUnitTest
+> Task :mergeDebugAssets UP-TO-DATE
+> Task :mergeDebugUnitTestAssets UP-TO-DATE
+> Task :packageDebugUnitTestForUnitTest UP-TO-DATE
+> Task :generateDebugUnitTestConfig UP-TO-DATE
+> Task :kspDebugKotlin
+> Task :compileDebugKotlin
+> Task :compileDebugJavaWithJavac NO-SOURCE
+> Task :processDebugJavaRes UP-TO-DATE
+> Task :bundleLibCompileToJarDebug
+> Task :bundleLibRuntimeToJarDebug
+> Task :kspDebugUnitTestKotlin
+> Task :compileDebugUnitTestKotlin
+> Task :compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :processDebugUnitTestJavaRes UP-TO-DATE
+> Task :testDebugUnitTest
+exit=124

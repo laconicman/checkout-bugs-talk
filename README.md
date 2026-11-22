@@ -4,6 +4,9 @@ Runnable companion examples for the conference talk **When Checkout Checks Out**
 three ways a checkout can fail through interactions between Room, SQLite and Kotlin
 coroutines.
 
+This is a fork. It keeps every example of the talk and adds a second fix to each story;
+[docs/README.md](docs/README.md) compares the two and records how each claim was checked.
+
 These are small educational reproductions. Tests assert the surprising behavior
 as well as countermeasures, so a successful run includes reproducing the bugs.
 There is no application UI, backend, account or emulator to set up.

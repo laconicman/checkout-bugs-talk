@@ -1,0 +1,3 @@
+# chernybro/checkout-bugs-talk, run 41435894996, 2026-11-02, step android-actions/setup-android@v3
+Warning: Failed to find package 'tools'
+Error: The process '/usr/local/lib/android/sdk/cmdline-tools/16.0/bin/sdkmanager' failed with exit code 1

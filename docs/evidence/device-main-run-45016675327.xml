@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="9" failures="0" errors="0" skipped="0" time="10.812" timestamp="2026-11-22T11:22:31" hostname="localhost">
+  <testsuite name="dev.checkout.talk.FrozenAppTopologyTest" tests="6" failures="0" errors="0" skipped="0" time="10.137" timestamp="2026-11-22T11:22:31" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554 - 15" />
+      <property name="flavor" value="" />
+      <property name="project" value=":" />
+    </properties>
+    <testcase name="on_a_write_ahead_log_file_a_read_from_another_scope_does_not_wait" classname="dev.checkout.talk.FrozenAppTopologyTest" time="0.1" />
+    <testcase name="on_a_rollback_journal_file_a_write_from_another_scope_waits_for_the_transaction" classname="dev.checkout.talk.FrozenAppTopologyTest" time="2.008" />
+    <testcase name="in_memory_a_read_from_another_scope_waits_for_the_transaction" classname="dev.checkout.talk.FrozenAppTopologyTest" time="2.007" />
+    <testcase name="on_a_rollback_journal_file_a_read_from_another_scope_waits_for_the_transaction" classname="dev.checkout.talk.FrozenAppTopologyTest" time="2.008" />
+    <testcase name="in_memory_a_write_from_another_scope_waits_for_the_transaction" classname="dev.checkout.talk.FrozenAppTopologyTest" time="2.007" />
+    <testcase name="on_a_write_ahead_log_file_a_write_from_another_scope_still_waits" classname="dev.checkout.talk.FrozenAppTopologyTest" time="2.007" />
+  </testsuite>
+  <testsuite name="dev.checkout.talk.RealRoomMigrationTest" tests="3" failures="0" errors="0" skipped="0" time="0.053" timestamp="2026-11-22T11:22:31" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554 - 15" />
+      <property name="flavor" value="" />
+      <property name="project" value=":" />
+    </properties>
+    <testcase name="the_same_migration_followed_by_the_sweep_leaves_no_orphans" classname="dev.checkout.talk.RealRoomMigrationTest" time="0.026" />
+    <testcase name="Room_runs_a_migration_before_it_has_turned_foreign_keys_on" classname="dev.checkout.talk.RealRoomMigrationTest" time="0.026" />
+    <testcase name="the_broken_migration_orphans_the_products_on_a_real_upgrade" classname="dev.checkout.talk.RealRoomMigrationTest" time="0.001" />
+  </testsuite>
+</testsuites>

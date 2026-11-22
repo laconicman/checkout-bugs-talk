@@ -1,0 +1,19 @@
+{
+  "repo_notes": [
+    {
+      "content": "This repository is a fork of chernybro/checkout-bugs-talk, the companion code of a conference talk about three checkout bugs (Room, SQLite, Kotlin coroutines). The fork keeps every example of the talk and adds a second fix to each story. What matters here is the comparison and the reasoning, and that lives in docs/: start from docs/README.md."
+    },
+    {
+      "content": "docs/ is authoritative over code comments when they disagree. One page per story (docs/story-1-frozen-app.md, docs/story-2-phantom-items.md, docs/story-3-white-screen.md), each with the mechanism, a table of strategies compared (the talk fix, the fork fix, rejected alternatives), the tests and the gotchas. docs/testing.md explains why each test exists and how it proves its claim. docs/gotchas.md is the catalogue of traps by layer. docs/changelog.md lists every change against upstream and what was first believed and later corrected. docs/sources.md says how far each source can be trusted."
+    },
+    {
+      "content": "Tests under src/test/ deliberately assert buggy behaviour as well as fixes, so a green run includes reproduced bugs. Do not describe an assertion that pins a wrong-looking result as a defect. src/androidTest/ holds instrumented copies of two test classes (RealRoomMigrationTest, FrozenAppTopologyTest) that run on an emulator; they differ from the originals in the runner and in underscore test names."
+    },
+    {
+      "content": "docs/evidence/ holds raw logs and result files behind the claims. They are evidence to cite, not subject matter for pages of their own. REVIEW.md steers the pull request reviewer on this fork and is not part of the talk."
+    },
+    {
+      "content": "Statements in docs/ are marked as measured (a test or a command shows it), read (taken from source or documentation of the pinned versions) or reasoned. Keep that distinction when summarising: do not present a read or reasoned statement as demonstrated."
+    }
+  ]
+}

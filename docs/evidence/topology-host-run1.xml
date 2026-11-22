@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.checkout.talk.FrozenAppTopologyTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-22T09:56:01.247Z" hostname="host" time="15.529">
+  <properties/>
+  <testcase name="in memory a write from another scope waits for the transaction" classname="dev.checkout.talk.FrozenAppTopologyTest" time="6.793"/>
+  <testcase name="on a write-ahead-log file a read from another scope does not wait" classname="dev.checkout.talk.FrozenAppTopologyTest" time="0.042"/>
+  <testcase name="on a rollback-journal file a write from another scope waits for the transaction" classname="dev.checkout.talk.FrozenAppTopologyTest" time="2.03"/>
+  <testcase name="in memory a read from another scope waits for the transaction" classname="dev.checkout.talk.FrozenAppTopologyTest" time="2.029"/>
+  <testcase name="on a rollback-journal file a read from another scope waits for the transaction" classname="dev.checkout.talk.FrozenAppTopologyTest" time="2.117"/>
+  <testcase name="on a write-ahead-log file a write from another scope still waits" classname="dev.checkout.talk.FrozenAppTopologyTest" time="2.101"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
