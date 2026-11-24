@@ -37,6 +37,7 @@ of the same run.
 | [white-screen-mutation-after-fix-messages.txt](white-screen-mutation-after-fix-messages.txt), [log](white-screen-mutation-after-fix.log) | With `runCurrent()` the same mutation fails |
 | [white-screen-new-tests-wrong-harness-messages.txt](white-screen-new-tests-wrong-harness-messages.txt), [log](white-screen-new-tests-wrong-harness.log) | Our three tests coming back empty under the wrong harness |
 | [white-screen-final.xml](white-screen-final.xml) | The final class: 6 tests, 0 failures |
+| [white-screen-fuzz.txt](white-screen-fuzz.txt) | The seeded tiered-vs-combine comparison: 300 arrival schedules, per-scenario timings |
 
 ## Build and CI
 

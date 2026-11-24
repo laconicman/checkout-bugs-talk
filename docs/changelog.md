@@ -39,7 +39,7 @@ Fork only, not meant for upstream: `REVIEW.md` (`71b156d`), this `docs/` folder
 | Change | Where | Why |
 |---|---|---|
 | CI reaches Gradle | `.github/workflows/tests.yml` | The default packages of `setup-android@v3` include one that no longer exists |
-| Test and class counts kept true in every step | `README.md` | The README states them; they went 28 → 31 → 34 → 36 → 44 → 47 → 48, eight → ten classes |
+| Test and class counts kept true in every step | `README.md` | The README states them; they went 28 → 31 → 34 → 36 → 44 → 47 → 48 → 49, eight → eleven classes |
 | "For story 1, continue with" list | `README.md` | Story 2 had such a list; story 1 now has a second class |
 | `RealRoomMigrationTest` added to the story 2 list | `README.md` | |
 | Story table rows 1 and 3 extended | `README.md` | Each names what was added |

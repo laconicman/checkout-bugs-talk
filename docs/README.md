@@ -13,7 +13,7 @@ so the two can be read and run side by side.
 | | Upstream `main` (`a6d80b5`) | This fork's `main` |
 |---|---|---|
 | CI | Never reached Gradle: fails in SDK setup after 29 s | Green; optional emulator job |
-| Unit tests | 28 in 8 classes. They pass, but upstream's CI never ran them. | 48 in 10 classes |
+| Unit tests | 28 in 8 classes. They pass, but upstream's CI never ran them. | 49 in 11 classes |
 | On an Android runtime | none | 9 tests on an API 35 emulator |
 | Story 1, frozen app | A marker in the coroutine context rejects network calls at run time | Also: who really waits, the marker's blind spot, a transaction body that cannot suspend |
 | Story 2, phantom items | Walk the child tables by hand; or sweep orphans once | Also: the sweep repeats until clean, and a wrapper runs it at the end of each migration registered through it; a real Room upgrade test |

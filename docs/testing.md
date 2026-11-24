@@ -17,11 +17,12 @@ than usual: could this test fail?
 | `PragmaInsideTransactionTest` | 3 | 1 | 4 | Robolectric |
 | `RealRoomMigrationTest` | | 3 | 3 | Robolectric, emulator |
 | `WhiteScreenTest` | 3 | 3 | 6 | plain JVM |
+| `WhiteScreenFuzzTest` | | 1 | 1 | plain JVM |
 | `WouldDeleteHaveHelpedTest` | 4 | | 4 | Robolectric |
-| **Total** | **28** | **20** | **48** | 9 also on the emulator |
+| **Total** | **28** | **21** | **49** | 9 also on the emulator |
 
 ```sh
-./gradlew testDebugUnitTest                # the 48 unit tests
+./gradlew testDebugUnitTest                # the 49 unit tests
 ./gradlew connectedDebugAndroidTest        # the 9 device tests; needs a device or an emulator
 ```
 
@@ -29,8 +30,8 @@ than usual: could this test fail?
 
 | Environment | What runs | What it can show | What it cannot |
 |---|---|---|---|
-| Host, macOS arm64, OpenJDK 17.0.21, Robolectric 4.17-beta-2 at SDK 35 | All 48 | Logic, Room, the framework's Java, SQLite semantics | The device's SQLite build and resources |
-| CI, Linux x86_64, same Robolectric | All 48 | That the result does not depend on the developer's machine | The same |
+| Host, macOS arm64, OpenJDK 17.0.21, Robolectric 4.17-beta-2 at SDK 35 | All 49 | Logic, Room, the framework's Java, SQLite semantics | The device's SQLite build and resources |
+| CI, Linux x86_64, same Robolectric | All 49 | That the result does not depend on the developer's machine | The same |
 | CI, emulator, API 35, x86_64 | 9 instrumented copies | The framework-dependent results on Android 15 itself | Other API levels, real hardware |
 
 Robolectric's fidelity is better than it sounds: in its native SQLite mode only
