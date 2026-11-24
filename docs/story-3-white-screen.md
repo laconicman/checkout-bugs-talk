@@ -67,8 +67,9 @@ five inputs independently never emits (15% chance per input) or emits after a un
 0–1000 ms virtual delay; virtual time makes the run deterministic. The tiered side is a
 faithful copy of the talk's shape, including `loadAdditional()` per optional emission.
 The corpus is the seeds themselves — rerun with
-`./gradlew testDebugUnitTest --tests "*WhiteScreenFuzzTest*"`; the report lands in
-`build/white-screen-fuzz.txt`, and a snapshot is in
+`./gradlew cleanTestDebugUnitTest testDebugUnitTest --tests "*WhiteScreenFuzzTest*"` (the
+clean task forces a rerun; a plain test task can be up-to-date and skip the report). The
+report lands in `build/white-screen-fuzz.txt`, and a snapshot is in
 [evidence](evidence/white-screen-fuzz.txt).
 
 | | Tiered loading | Single-level combine |
@@ -84,8 +85,9 @@ collects all inputs in parallel, so it lands at the *maximum*. Under this model 
 roughly a factor of two.
 
 The model assumes each input is a cold flow with independent latency. If the repository
-serves hot or cached flows the gap narrows — but parallel collection cannot be slower
-than serial awaiting, and the test asserts combine was never later.
+serves hot or cached flows the gap narrows — and there the ordering is reasoned, not
+measured: the assertion covers the modeled corpus only. What holds regardless is that
+parallel collection cannot await more delays than serial awaiting does.
 
 What the numbers do not say: efficiency was never the real difference. Both approaches
 agree on *whether* content is reachable — exactly the 196 scenarios without a silent
@@ -177,5 +179,6 @@ scenarios with per-scenario timings; regenerate it with the test above.
 ## Not verified
 
 - The fuzz model assumes cold flows with independent latency; hot or cached repository
-  flows would narrow the latency gap (never reverse it, per the asserted invariant).
+  flows would narrow the latency gap, and the asserted invariant covers the modeled
+  corpus only — for hot flows the ordering is reasoned, not measured.
 - A device: these are plain JVM tests and a device adds nothing.

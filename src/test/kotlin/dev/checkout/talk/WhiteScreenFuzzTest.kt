@@ -31,7 +31,9 @@ import kotlin.test.assertTrue
  * results are stable by construction and bounded by advanceTimeBy — no hangs, no flakiness.
  *
  * Regenerate the measurement (written to build/white-screen-fuzz.txt, gitignored) with:
- *   ./gradlew testDebugUnitTest --tests "*WhiteScreenFuzzTest*"
+ *   ./gradlew cleanTestDebugUnitTest testDebugUnitTest --tests "*WhiteScreenFuzzTest*"
+ * The clean task is needed: an up-to-date test task would not rerun, and a deleted
+ * report would not come back.
  * The committed snapshot of one run lives in docs/evidence/white-screen-fuzz.txt.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -186,6 +188,7 @@ class WhiteScreenFuzzTest {
         // collected in parallel (first content at max delay), tiered awaits them
         // sequentially (first content at the sum of delays).
         val bothContent = results.filter { it.tieredFirstMs >= 0 && it.combineFirstContentMs >= 0 }
+        assertTrue(bothContent.isNotEmpty(), "corpus produced no scenarios where both reach content")
         val violations = bothContent.count { it.combineFirstContentMs > it.tieredFirstMs }
         assertTrue(violations == 0, "combine first-content later than tiered in $violations scenarios")
 
