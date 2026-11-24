@@ -1,6 +1,7 @@
 # Story 3: the white screen
 
-Tests: [WhiteScreenTest](../src/test/kotlin/dev/checkout/talk/WhiteScreenTest.kt).
+Tests: [WhiteScreenTest](../src/test/kotlin/dev/checkout/talk/WhiteScreenTest.kt),
+[WhiteScreenFuzzTest](../src/test/kotlin/dev/checkout/talk/WhiteScreenFuzzTest.kt).
 
 ## The bug
 
@@ -27,7 +28,7 @@ So the cause is not a slow input. It is an input for which `combine` has no valu
 
 | Strategy | First frame | A silent mandatory input | Later changes to mandatory inputs | Cost | Status |
 |---|---|---|---|---|---|
-| **Tiered loading**: await the mandatory tier with `first()`, render, then add the rest | As soon as the mandatory tier has arrived | No state is produced. Reasoned from the code: `first()` would wait. No test shows it. | Not seen: the tier is read once | A second, imperative mechanism next to the flows; ordering code | The talk's fix. Kept, untouched. |
+| **Tiered loading**: await the mandatory tier with `first()`, render, then add the rest | As soon as the mandatory tier has arrived | No state at all while a mandatory input is silent — measured by `WhiteScreenFuzzTest` (below) | Not seen: the tier is read once | A second, imperative mechanism next to the flows; ordering code | The talk's fix. Kept, untouched. |
 | **Every input starts as "not yet"**, one `combine` derives the frame | At once: `Loading` while a mandatory input is missing, or `Content` straight away if they have all arrived by the first combination | `Loading`, a state the screen can draw | Reach the screen through the same flow | One operator per input and one `if` | Ours. Added next to the tiered test. |
 | Initial value only for the optional inputs | When the mandatory inputs have arrived | Silence again | Reach the screen | Less code | Not built. It is the same idea, applied halfway. |
 | `stateIn(scope, Eagerly, null)` per input | The same as "not yet" | The same | The same | Needs a scope, starts collecting at once, conflates | Not chosen: more machinery than `onStart` for an adapter inside one `combine` |
@@ -58,6 +59,42 @@ What it does not do:
 - It does not recover what a hot input without replay emitted before `combine` subscribed.
   Any collector of such a flow has that gap. A `StateFlow`, a Room query flow or a cold flow
   does not.
+
+## Measured: the two fixes under randomized arrivals
+
+`WhiteScreenFuzzTest` runs both fixes through the same 300 arrival schedules. Each of the
+five inputs independently never emits (15% chance per input) or emits after a uniform
+0–1000 ms virtual delay; virtual time makes the run deterministic. The tiered side is a
+faithful copy of the talk's shape, including `loadAdditional()` per optional emission.
+The corpus is the seeds themselves — rerun with
+`./gradlew cleanTestDebugUnitTest testDebugUnitTest --tests "*WhiteScreenFuzzTest*"` (the
+clean task forces a rerun; a plain test task can be up-to-date and skip the report). The
+report lands in `build/white-screen-fuzz.txt`, and a snapshot is in
+[evidence](evidence/white-screen-fuzz.txt).
+
+| | Tiered loading | Single-level combine |
+|---|---|---|
+| Scenarios with a silent mandatory input (104 of 300) | **Zero states emitted — the white screen persists** | `Loading` frames, in all 104 |
+| First content, where both reach it (n = 196) | mean 1498 ms, p50 1481, p90 2299, max 2808 | mean 746 ms, p50 784, p90 964, max 995 |
+| Combine earlier | — | 196 of 196, zero violations (asserted) |
+| States/frames emitted | mean 2, max 3 | mean 2, max 4 |
+
+Why the latency gap is structural, not incidental: `loadMain()` awaits the mandatory
+inputs one after another, so first content lands at the *sum* of their delays; `combine`
+collects all inputs in parallel, so it lands at the *maximum*. Under this model that is
+roughly a factor of two.
+
+The model assumes each input is a cold flow with independent latency. If the repository
+serves hot or cached flows the gap narrows — and there the ordering is reasoned, not
+measured: the assertion covers the modeled corpus only. What holds regardless is that
+parallel collection cannot await more delays than serial awaiting does.
+
+What the numbers do not say: efficiency was never the real difference. Both approaches
+agree on *whether* content is reachable — exactly the 196 scenarios without a silent
+mandatory input. They differ on whether the wait is *represented*: tiered has no state
+for it, combine has `Loading`. And tiered keeps the mandatory/optional distinction in
+its state types (`Base`/`Enriched`), which is the honest argument for it in production
+code behind an outer loader.
 
 ## A test that could not fail
 
@@ -90,6 +127,7 @@ The fix is one line: `runCurrent()`, which runs background work too. What the te
 | `inputs that start as not-yet render the first frame without the optional one` | ours | Our fix | The last frame is `Content` with `promos = null` |
 | `a silent mandatory input renders loading instead of nothing` | ours | A state where there was none | The frames are exactly `[Loading]` |
 | `a mandatory input that changes later updates the frame` | ours | The inputs stay live | `Loading`, then `RUB`, then `EUR`, each asserted |
+| `tiered vs single-level combine over seeded arrival schedules` | ours | Measure both fixes under 300 arrival schedules | Asserts the invariants that held in every run; writes the report to `build/` |
 
 In our three tests the silent inputs are `MutableSharedFlow()`: open, subscribed, and never
 emitting. An `emptyFlow()` completes at once, which is a different situation.
@@ -129,6 +167,8 @@ FAIL a silent mandatory input renders loading instead of nothing | java.lang.Ass
 
 The probe that told the two explanations apart: [text](evidence/coroutines-test-background-scope-probe.txt).
 The final class: [6 tests, 0 failures](evidence/white-screen-final.xml), the same in three runs.
+The seeded comparison: [white-screen-fuzz.txt](evidence/white-screen-fuzz.txt), 300
+scenarios with per-scenario timings; regenerate it with the test above.
 
 ## Left alone, and raised with the author
 
@@ -138,5 +178,7 @@ The final class: [6 tests, 0 failures](evidence/white-screen-final.xml), the sam
 
 ## Not verified
 
-- What the tiered example does with a silent mandatory input.
+- The fuzz model assumes cold flows with independent latency; hot or cached repository
+  flows would narrow the latency gap, and the asserted invariant covers the modeled
+  corpus only — for hot flows the ordering is reasoned, not measured.
 - A device: these are plain JVM tests and a device adds nothing.
