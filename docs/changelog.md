@@ -16,9 +16,11 @@ branch: they reached this fork's `main` through merge commits, never squashed.
 | [7](https://github.com/laconicman/checkout-bugs-talk/pull/7) | `feat/white-screen-initial-values` | `4e56051` | pivotal fix | Inputs that start as "not yet", one `combine` | 47 |
 | [8](https://github.com/laconicman/checkout-bugs-talk/pull/8) | `ci/emulator-device-tests` | `e588d5c` | optional | Emulator job and instrumented copies of two classes | 47, and 9 on device |
 | [10](https://github.com/laconicman/checkout-bugs-talk/pull/10) | `fix/sweep-shadowed-rowid` | `9a3a612` | fix | The sweep addresses rows by a rowid name the table has left free | 48 |
+| [12](https://github.com/laconicman/checkout-bugs-talk/pull/12) | `test/white-screen-seeded-fuzz` | `afc4f10`, `138b065` | measurement | A seeded comparison of the two white-screen fixes, with docs | 49 |
 
 The first eight reached `main` in one merge commit, `7d901b1`. The ninth change was found
-while these pages were reviewed, and merged on its own as `a754010`.
+while these pages were reviewed, and merged on its own as `a754010`; the docs update
+followed as `9e20df3`, and the seeded comparison as `9fff717`.
 
 Fork only, not meant for upstream: `REVIEW.md` (`71b156d`), this `docs/` folder
 ([#9](https://github.com/laconicman/checkout-bugs-talk/pull/9)), and the merge commits.
